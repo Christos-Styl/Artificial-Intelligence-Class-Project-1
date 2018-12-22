@@ -7,7 +7,7 @@ public class Node {
      */
     private Point coords;
     private int id;
-    private ArrayList<Node> neighbours;
+    //private ArrayList<Node> neighbours;
     private double fScore;
     private double gScore;
     private Node parent;
@@ -34,9 +34,9 @@ public class Node {
         this.id = id;
     }
 
-    public ArrayList<Node> getNeighbours() {
-        return neighbours;
-    }
+    //public ArrayList<Node> getNeighbours() {
+    //    return neighbours;
+    //}
 
     public double getfScore() {
         return fScore;
@@ -69,13 +69,24 @@ public class Node {
     public Node(double x, double y, int id) {
         coords = new Point(x, y);
         this.id = id;
-        this.neighbours = new ArrayList<>();
+        //this.neighbours = new ArrayList<>();
         this.parent = null;
+        this.fScore = Double.MAX_VALUE;
+        this.gScore = Double.MAX_VALUE;
     }
     
-    public void addNeighbours(Node neighbour) {
-        this.neighbours.add(neighbour);
+    public Node(Node other) {
+        this.coords = new Point(other.coords);
+        this.id = other.id;
+        //this.neighbours = new ArrayList<>();
+        this.parent = other.parent;
+        this.fScore = other.fScore;
+        this.gScore = other.gScore;
     }
+    
+    //public void addNeighbours(Node neighbour) {
+    //    this.neighbours.add(neighbour);
+    //}
     
     public void printNode(){
         System.out.println(this.coords.getX() + ", " + this.coords.getY() + ", id:" + id);

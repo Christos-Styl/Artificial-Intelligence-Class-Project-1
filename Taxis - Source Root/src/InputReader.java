@@ -12,6 +12,7 @@ public class InputReader {
     //ArrayList<Node> nodes;  //ArrayList of all nodes in the map (duplicates left out) - not used
     HashMap <Node, ArrayList<Node>> hashmap;    //hashmap for quick lookup of nodes:
                                                 //the nodes are the keys and the lists of neighbours are the values
+    ArrayList<Taxi> taxis;  //ArrayList of all Taxis
     
     public class InputReaderException extends Exception {
         public InputReaderException(String msg) {
@@ -140,6 +141,7 @@ public class InputReader {
 		previous_id = current_id;
                 test__counter++;
             }
+            System.out.print("\tClient found at "); client.printNode();
             System.out.println ("\tStarting number of nodes: " + test__counter + ".");
             System.out.println("\tSize of hashmap: " + this.hashmap.size() + ".");
             System.out.println ("\tNumber of crossings: " + (test__counter - this.hashmap.size()) + ".");
@@ -152,10 +154,13 @@ public class InputReader {
     }
     
     public HashMap <Node, ArrayList<Node>> runInputReader(){
+        System.out.println("InputReader: Started reading client position.");
         Point clientPoint = getClientPosition();
         System.out.println("InputReader: Done with client position.");
-        ArrayList<Taxi> taxis = getTaxisPositions();
+        System.out.println("InputReader: Started reading taxi positions.");
+        taxis = getTaxisPositions();
         System.out.println("InputReader: Done with taxi positions.");
+        System.out.println("InputReader: Started reading node positions.");
         getNodesPositions(clientPoint);
         System.out.println("InputReader: Done with node creation.");
         return this.hashmap;

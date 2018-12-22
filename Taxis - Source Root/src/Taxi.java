@@ -1,5 +1,8 @@
 package Taxis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Taxi {
 
     private Point coords;
@@ -24,5 +27,21 @@ public class Taxi {
     public Taxi(double x, double y, int id) {
         this.coords = new Point(x, y);
         this.id = id;
+    }
+    
+    /** function that finds the closest node to a taxi and returns it
+     */
+    public Node findTaxiNode(HashMap <Node, ArrayList<Node>> hashmap){
+        Node result = null;
+        double minDistance = Double.MAX_VALUE, newDistance;
+        for(Node key : hashmap.keySet()){
+            newDistance = key.getCoords().distance(this.coords);
+            if(newDistance < minDistance){
+                minDistance = newDistance;
+                result = key;
+            }
+        }
+        System.out.println("\tTaxi with id " + this.id + " has distance from closest node: " + minDistance);
+        return result;
     }
 }

@@ -26,13 +26,18 @@ public class Point {
         this.y = y;
     }
     
-    public Point() throws Exception{
+    public Point() throws PointException{
         throw new PointException("Point created with no starting values");
     }
 
     public Point(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+    
+    public Point(Point other) {
+        this.x = other.x;
+        this.y = other.y;
     }
     
     public double distance(Point other){
