@@ -29,7 +29,8 @@ public class Taxi {
         this.id = id;
     }
     
-    /** function that finds the closest node to a taxi and returns it
+    /** 
+     * Finds the closest node to a taxi and returns it.
      */
     public Node findTaxiNode(HashMap <Node, ArrayList<Node>> hashmap){
         Node result = null;
@@ -41,7 +42,7 @@ public class Taxi {
                 result = key;
             }
         }
-        System.out.println("\tTaxi with id " + this.id + " has distance from closest node: " + minDistance);
+        System.out.println("\tTaxi with id " + this.id + " has distance from closest node: " + minDistance + " meters.");
         return result;
     }
 }

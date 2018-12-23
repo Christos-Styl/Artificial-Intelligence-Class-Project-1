@@ -40,6 +40,9 @@ public class Point {
         this.y = other.y;
     }
     
+    /** 
+     * Measures the distance between two Points after converting longitude and latitude to meters.
+     */
     public double distance(Point other){
         final int R = 6371000; // Radius of the earth
         double latDistance = Math.toRadians(this.x - other.x);

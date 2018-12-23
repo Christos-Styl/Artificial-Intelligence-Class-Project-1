@@ -8,6 +8,13 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Taxis_Main {
+    
+    public static class Taxis_MainException extends Exception{
+        public Taxis_MainException(String msg) {
+            super(msg);
+        }
+    }
+    
     public static void main(String[] args) {    //args[0]: clientsFile, args[1]: nodesFile, args[2]: taxisFile
         InputReader reader = new InputReader(args[0], args[1], args[2]);
         HashMap<Node, ArrayList<Node>> hashmap = reader.runInputReader();
@@ -17,22 +24,32 @@ public class Taxis_Main {
             taxiNodes.add(taxi.findTaxiNode(hashmap));
         }
         System.out.println("Main: Finished matching taxis with nodes.");
-        System.out.println("Main: Initializing A* Algorithm.");
+        System.out.println("Main: Beginning initialization of A* Algorithm for all taxis.");
+        int bestTaxiId = -1;
+        double bestDistance = Double.MAX_VALUE;
         try{
-            int j = 1;
+            int j = 0;
             ArrayList<HashMap<Node, Node>> results = new ArrayList<>();
             for(Node t : taxiNodes){
                 HashMap<Node, ArrayList<Node>> passedHashMap = new HashMap<>(hashmap);
-                //Node passedClient = new Node(reader.client);
                 AStar astar = new AStar(passedHashMap, reader.client);
-                System.out.println("Main: A* Algorithm initialized successfully. Taxi #" + j + ".");
-                results.add(astar.runAStar(t));
+                System.out.println("Main: A* Algorithm initialized successfully for taxi with ID " + reader.taxis.get(j).getId() + ".");
+                Pair pair = astar.runAStar(t, reader.taxis.get(j));
+                results.add(pair.getHashmap());
+                if(pair.getDistance() < bestDistance){
+                    bestDistance = pair.getDistance();
+                    bestTaxiId = reader.taxis.get(j).getId();
+                }
                 j++;
             }
+            if(bestTaxiId == -1) throw new Taxis_MainException("Something went wrong... No taxi reached the client.");
             System.out.println("Main: Exiting A* Algorithm.");
+            System.out.println("\t***Best taxi was taxi with ID " + bestTaxiId + " with a distance of " + bestDistance + " meters from the client.");
             System.out.println("Main: Began creation of kml file.");
-            kml("results.kml", results, reader.client);
+            kml("results2.kml", results, reader.client, reader.taxis);
             System.out.println("Main: Finished creation of kml file.");
+            System.out.println("Main: Repeating: ***Best taxi was taxi with ID " + bestTaxiId + " with a distance of " + bestDistance + " meters from the client.");
+            System.out.println("Main: Exiting now...");
         }
         catch (Exception e) {
             System.out.println(e.getClass().getCanonicalName() + ", " + e.getMessage());
@@ -40,9 +57,12 @@ public class Taxis_Main {
         }
     }
     
-    public static void kml(String filename, ArrayList<HashMap<Node,Node>> results, Node client) {
+    /**
+     * Creates the kml file with a different style for each taxi.
+     */
+    public static void kml(String filename, ArrayList<HashMap<Node,Node>> results, Node client, ArrayList<Taxi> taxis) {
         Random rand = new Random();
-        Color green = Color.GREEN.darker(), color;
+        Color color;
         PrintWriter writer = null;
 
         try{
@@ -51,41 +71,20 @@ public class Taxis_Main {
             writer.println("<kml xmlns=\"http://earth.google.com/kml/2.1\">");
             writer.println("<Document>");
             writer.println("<name>Taxi Routes</name>");
-            writer.println("<Style id=\"taxi0\">");
-            writer.println("<LineStyle>");
-            writer.println("<color>" + Integer.toHexString(green.getRGB()) + "</color>");
-            writer.println("<width>4</width>");
-            writer.println("</LineStyle>");
-            writer.println("</Style>");
-            int i = 1;
-            /**
-             *  Make random colors for the
-             *  rest of the taxi routes.
-             *  Don't make it green.
-             */
+            int i = 0;
             while (i < results.size()){
-
-                int r = rand.nextInt(255);
-                int g = rand.nextInt(127);
+                int r = rand.nextInt(205);
+                int g = rand.nextInt(105);
                 int b = rand.nextInt(255);
                 color = new Color(r, g, b);
-
-                //if (color.getRGB() == green.getRGB())
-                //    continue;
-
-                writer.println("<Style id=\"taxi" + i + "\">");
+                writer.println("<Style id=\"taxi" + taxis.get(i).getId() + "\">");
                 writer.println("<LineStyle>");
                 writer.println("<color>" + Integer.toHexString(color.getRGB()) + "</color>");
                 writer.println("<width>4</width>");
                 writer.println("</LineStyle>");
                 writer.println("</Style>");
-
                 i++;
-
             }
-            /**
-             *  This is to make the client point
-             */
             writer.println("<Placemark>");
             writer.println("<name>Client</name>");
             writer.println("<Point>");
@@ -95,41 +94,35 @@ public class Taxis_Main {
             writer.println("</Point>");
             writer.println("</Placemark>");
             
-            int taxiNum = 0;
-            /**
-             *  This is to make the first route
-             *  have green color.
-             */
-            while(taxiNum < results.size()){
-                System.out.println("KML: Began writing taxi #" + taxiNum + ".");
+            i = 0;
+            while(i < results.size()){
+                System.out.println("KML: Began writing taxi with ID " + taxis.get(i).getId() + ".");
                 writer.println("<Placemark>");
-                writer.println("<name>Taxi's ID " + taxiNum + "</name>");
-                writer.println("<styleUrl>#taxi" + taxiNum + "</styleUrl>");
+                writer.println("<name>Taxi with ID " + taxis.get(i).getId() + "</name>");
+                writer.println("<styleUrl>#taxi" + taxis.get(i).getId() + "</styleUrl>");
                 writer.println("<LineString>");
                 writer.println("<altitudeMode>relative</altitudeMode>");
                 writer.println("<coordinates>");
 
-                Node current = results.get(taxiNum).get(client);  //get the clients parent in this taxi's HashMap
+                Node current = results.get(i).get(client);  //get the clients parent in this taxi's HashMap
                 while(current != null){
                     writer.println(current.getCoords().getX() + "," + current.getCoords().getY());
-                    current = results.get(taxiNum).get(current);
+                    current = results.get(i).get(current);
                 }
             
                 writer.println("</coordinates>");
                 writer.println("</LineString>");
                 writer.println("</Placemark>");
-                taxiNum++;
+                i++;
             }
-
             writer.println("</Document>");
             writer.println("</kml>");
-
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } finally {
-            if (writer != null)
+            if (writer != null){
                 writer.close();
+            }
         }
     }
 }
-

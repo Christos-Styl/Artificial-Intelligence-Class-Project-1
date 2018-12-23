@@ -7,14 +7,13 @@ import java.util.*;
 public class InputReader {
     private String clientsFile, nodesFile, taxisFile;
     private Scanner scannerClients, scannerNodes, scannerTaxis;
-    //we will not make the following variables private for simplicity
-    Node client;    //node closest to the client
-    //ArrayList<Node> nodes;  //ArrayList of all nodes in the map (duplicates left out) - not used
+    //variables will not be declared private for simplicity
+    Node client;
     HashMap <Node, ArrayList<Node>> hashmap;    //hashmap for quick lookup of nodes:
                                                 //the nodes are the keys and the lists of neighbours are the values
     ArrayList<Taxi> taxis;  //ArrayList of all Taxis
     
-    public class InputReaderException extends Exception {
+    public class InputReaderException extends Exception{
         public InputReaderException(String msg) {
             super(msg);
         }
@@ -38,17 +37,17 @@ public class InputReader {
             System.exit(1);
         }
         client = null;
-        //nodes = new ArrayList<>();
         hashmap = new HashMap<>();
     }
     
-    /** this method reads the clients position from a file and creates a Point
+    /**
+     * Reads the clients position from a file and creates a Point
      * reference with his coordinates.
      */
     public Point getClientPosition(){
         double[] coords = new double[2];
         try{
-            scannerClients.useDelimiter(",|\n");
+            scannerClients.useDelimiter(",|\r\n");
             scannerClients.next();
             scannerClients.next();
             coords[0] = scannerClients.nextDouble();
@@ -62,7 +61,8 @@ public class InputReader {
         return new Point(coords[0],coords[1]);
     }
     
-    /** this method creates the list of taxis and returns an ArrayList of Taxi
+    /**
+     * Creates the list of taxis and returns an ArrayList of Taxi
      * references.
      */
     public ArrayList<Taxi> getTaxisPositions(){
@@ -87,8 +87,10 @@ public class InputReader {
         return t;
     }
     
-    /** this method creates the nodes used in the A* algorithm. It filters out
+    /**
+     * Creates the nodes used in the A* algorithm. Filters out
      * duplicate nodes and also finds the node closest to the client.
+     * Calls functions defined above.
      */
     public void getNodesPositions(Point clientPosition){
         double [] coords = new double[2];
@@ -105,7 +107,6 @@ public class InputReader {
             id = scannerNodes.nextInt();
             scannerNodes.nextLine();
             temp = new Node(coords[0], coords[1], id);
-            //this.nodes.add(temp);
             previous = temp;
             previous_id = previous.getId();
             client = temp;
@@ -118,7 +119,6 @@ public class InputReader {
                 id = scannerNodes.nextInt();
                 scannerNodes.nextLine();
                 temp = new Node(coords[0], coords[1], id);
-                //this.nodes.add(temp);
                 current = temp;
                 current_id = current.getId();
                 dist = current.getCoords().distance(clientPosition);
@@ -141,11 +141,11 @@ public class InputReader {
 		previous_id = current_id;
                 test__counter++;
             }
-            System.out.print("\tClient found at "); client.printNode();
+            System.out.print("\tClient node is "); client.printNode();
             System.out.println ("\tStarting number of nodes: " + test__counter + ".");
-            System.out.println("\tSize of hashmap: " + this.hashmap.size() + ".");
-            System.out.println ("\tNumber of crossings: " + (test__counter - this.hashmap.size()) + ".");
-            System.out.println("\tDistance between client and nearest node: " + min_dist + " meters.");
+            System.out.println("\tFinal number of nodes after removing duplicates: " + this.hashmap.size() + ".");
+            System.out.println("\tDistance between client and client node: " + min_dist + " meters.");
+            scannerNodes.close();
         }
         catch (Exception e) {
             System.out.println(e.getClass().getCanonicalName() + ", " + e.getMessage());

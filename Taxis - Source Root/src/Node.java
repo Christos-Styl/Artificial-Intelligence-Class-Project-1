@@ -1,16 +1,13 @@
 package Taxis;
 
-import java.util.ArrayList;
-
 public class Node {
-    /** Node's Cartesian coordinates (x,y), id number, list of neighbours, f-score and g-score (for the a-star algorithm) and parent node.
+    /** 
+     * Node's coordinates (x,y), id number, list of neighbours, f-score and g-score (for the a-star algorithm).
      */
     private Point coords;
     private int id;
-    //private ArrayList<Node> neighbours;
     private double fScore;
     private double gScore;
-    private Node parent;
     
     public class NodeException extends Exception {
         public NodeException(String msg) {
@@ -34,10 +31,6 @@ public class Node {
         this.id = id;
     }
 
-    //public ArrayList<Node> getNeighbours() {
-    //    return neighbours;
-    //}
-
     public double getfScore() {
         return fScore;
     }
@@ -53,14 +46,6 @@ public class Node {
     public void setgScore(double gScore) {
         this.gScore = gScore;
     }
-
-    public Node getParent() {
-        return parent;
-    }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
     
     public Node() throws NodeException{
         throw new NodeException("Node created with no starting values");
@@ -69,8 +54,6 @@ public class Node {
     public Node(double x, double y, int id) {
         coords = new Point(x, y);
         this.id = id;
-        //this.neighbours = new ArrayList<>();
-        this.parent = null;
         this.fScore = Double.MAX_VALUE;
         this.gScore = Double.MAX_VALUE;
     }
@@ -78,15 +61,9 @@ public class Node {
     public Node(Node other) {
         this.coords = new Point(other.coords);
         this.id = other.id;
-        //this.neighbours = new ArrayList<>();
-        this.parent = other.parent;
         this.fScore = other.fScore;
         this.gScore = other.gScore;
     }
-    
-    //public void addNeighbours(Node neighbour) {
-    //    this.neighbours.add(neighbour);
-    //}
     
     public void printNode(){
         System.out.println(this.coords.getX() + ", " + this.coords.getY() + ", id:" + id);
