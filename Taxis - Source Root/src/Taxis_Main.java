@@ -51,7 +51,7 @@ public class Taxis_Main {
             writer.println("<kml xmlns=\"http://earth.google.com/kml/2.1\">");
             writer.println("<Document>");
             writer.println("<name>Taxi Routes</name>");
-            writer.println("<Style id=\"green\">");
+            writer.println("<Style id=\"taxi0\">");
             writer.println("<LineStyle>");
             writer.println("<color>" + Integer.toHexString(green.getRGB()) + "</color>");
             writer.println("<width>4</width>");
@@ -70,8 +70,8 @@ public class Taxis_Main {
                 int b = rand.nextInt(255);
                 color = new Color(r, g, b);
 
-                if (color.getRGB() == green.getRGB())
-                    continue;
+                //if (color.getRGB() == green.getRGB())
+                //    continue;
 
                 writer.println("<Style id=\"taxi" + i + "\">");
                 writer.println("<LineStyle>");
@@ -104,7 +104,7 @@ public class Taxis_Main {
                 System.out.println("KML: Began writing taxi #" + taxiNum + ".");
                 writer.println("<Placemark>");
                 writer.println("<name>Taxi's ID " + taxiNum + "</name>");
-                writer.println("<styleUrl>" + taxiNum + "</styleUrl>");
+                writer.println("<styleUrl>#taxi" + taxiNum + "</styleUrl>");
                 writer.println("<LineString>");
                 writer.println("<altitudeMode>relative</altitudeMode>");
                 writer.println("<coordinates>");
